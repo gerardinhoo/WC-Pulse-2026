@@ -1,0 +1,42 @@
+datasource db {
+  provider = "sqlite"
+}
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+model Team {
+  id        Int      @id @default(autoincrement())
+  name      String
+  country   String
+  group     String
+  createdAt DateTime @default(now())
+
+  homeMatches Match[] @relation("HomeTeam")
+  awayMatches Match[] @relation("AwayTeam")
+}
+
+model Stadium {
+  id      Int    @id @default(autoincrement())
+  name    String
+  city    String
+  country String
+
+  matches Match[]
+}
+
+model Match {
+  id         Int      @id @default(autoincrement())
+  homeTeamId Int
+  awayTeamId Int
+  stadiumId  Int
+  date       DateTime
+  homeScore  Int?
+  awayScore  Int?
+
+  homeTeam Team    @relation("HomeTeam", fields: [homeTeamId], references: [id])
+  awayTeam Team    @relation("AwayTeam", fields: [awayTeamId], references: [id])
+  stadium  Stadium @relation(fields: [stadiumId], references: [id])
+}

@@ -40,3 +40,10 @@ model Match {
   awayTeam Team    @relation("AwayTeam", fields: [awayTeamId], references: [id])
   stadium  Stadium @relation(fields: [stadiumId], references: [id])
 }
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}

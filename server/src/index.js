@@ -1,19 +1,19 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { PrismaClient } from "./generated/prisma/client.ts";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import { prisma } from "../lib/prisma.js";
+// import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import authRoutes from "../routes/auth.js";
 
 
 dotenv.config()
 
 const app = express();
-const adapter = new PrismaBetterSqlite3({ url: "file:./dev.db" });
-const prisma = new PrismaClient({ adapter });
-
+// const adapter = new PrismaBetterSqlite3({ url: "file:./dev.db" });
 
 app.use(cors());
 app.use(express.json())
+app.use("/api/auth", authRoutes);
 
 
 app.get("/api/health", (req, res) => {
@@ -56,6 +56,8 @@ app.get("/api/matches", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch matches" });
   }
 });
+
+
 
 
 const PORT = process.env.PORT || 5050;

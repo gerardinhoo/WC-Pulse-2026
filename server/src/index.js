@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import { prisma } from "../lib/prisma.js";
 import authRoutes from "../routes/auth.js";
 import predictionsRoutes from "../routes/predictions.js";
+import leaderboardRoutes from "../routes/leaderboard.js";
 
 
 dotenv.config()
@@ -14,7 +15,7 @@ app.use(cors());
 app.use(express.json())
 app.use("/api/auth", authRoutes);
 app.use("/api/predictions", predictionsRoutes);
-
+app.use("/api/leaderboard", leaderboardRoutes);
 
 app.get("/api/health", (req, res) => {
     res.json({ status: "API is running!"});
@@ -56,9 +57,6 @@ app.get("/api/matches", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch matches" });
   }
 });
-
-
-
 
 const PORT = process.env.PORT || 5050;
 

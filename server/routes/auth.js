@@ -67,7 +67,6 @@ router.post("/login", async (req, res) => {
     }
 })
 
-
 // Protected Route
 router.get("/me", authMiddleware, async(req, res) => {
   const user = await prisma.user.findUnique({

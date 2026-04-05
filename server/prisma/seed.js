@@ -126,161 +126,51 @@ async function main() {
   const stadiums = await prisma.stadium.findMany();
 
   // ⚽ Seed Group Stage Matches (Matchday 1 — June 11–17)
-  await prisma.match.createMany({
-    data: [
-      // June 11
-      {
-        homeTeamId: team(teams, "Mexico"),
-        awayTeamId: team(teams, "South Africa"),
-        stadiumId: stadium(stadiums, "Estadio Azteca"),
-        date: new Date("2026-06-11T19:00:00Z"),
+  // Using individual create() calls so @updatedAt auto-populates (createMany doesn't trigger it in SQLite)
+  const matchData = [
+    // June 11
+    { home: "Mexico", away: "South Africa", venue: "Estadio Azteca", date: "2026-06-11T19:00:00Z" },
+    { home: "South Korea", away: "UEFA Playoff D Winner", venue: "Estadio Akron", date: "2026-06-12T02:00:00Z" },
+    // June 12
+    { home: "Canada", away: "UEFA Playoff A Winner", venue: "BMO Field", date: "2026-06-12T19:00:00Z" },
+    { home: "USA", away: "Paraguay", venue: "SoFi Stadium", date: "2026-06-13T01:00:00Z" },
+    // June 13
+    { home: "Qatar", away: "Switzerland", venue: "Levi's Stadium", date: "2026-06-13T19:00:00Z" },
+    { home: "Brazil", away: "Morocco", venue: "MetLife Stadium", date: "2026-06-13T22:00:00Z" },
+    { home: "Haiti", away: "Scotland", venue: "Gillette Stadium", date: "2026-06-14T01:00:00Z" },
+    { home: "Australia", away: "UEFA Playoff C Winner", venue: "BC Place", date: "2026-06-13T22:00:00Z" },
+    // June 14
+    { home: "Germany", away: "Curaçao", venue: "NRG Stadium", date: "2026-06-14T17:00:00Z" },
+    { home: "Netherlands", away: "Japan", venue: "AT&T Stadium", date: "2026-06-14T20:00:00Z" },
+    { home: "Ivory Coast", away: "Ecuador", venue: "Lincoln Financial Field", date: "2026-06-14T23:00:00Z" },
+    { home: "UEFA Playoff B Winner", away: "Tunisia", venue: "Estadio BBVA", date: "2026-06-15T02:00:00Z" },
+    // June 15
+    { home: "Spain", away: "Cape Verde", venue: "Mercedes-Benz Stadium", date: "2026-06-15T16:00:00Z" },
+    { home: "Belgium", away: "Egypt", venue: "Lumen Field", date: "2026-06-15T19:00:00Z" },
+    { home: "Saudi Arabia", away: "Uruguay", venue: "Hard Rock Stadium", date: "2026-06-15T22:00:00Z" },
+    { home: "Iran", away: "New Zealand", venue: "SoFi Stadium", date: "2026-06-16T01:00:00Z" },
+    // June 16
+    { home: "France", away: "Senegal", venue: "MetLife Stadium", date: "2026-06-16T19:00:00Z" },
+    { home: "FIFA Playoff 2 Winner", away: "Norway", venue: "Gillette Stadium", date: "2026-06-16T22:00:00Z" },
+    { home: "Argentina", away: "Algeria", venue: "Arrowhead Stadium", date: "2026-06-17T01:00:00Z" },
+    { home: "Austria", away: "Jordan", venue: "Levi's Stadium", date: "2026-06-17T04:00:00Z" },
+    // June 17
+    { home: "Portugal", away: "FIFA Playoff 1 Winner", venue: "NRG Stadium", date: "2026-06-17T17:00:00Z" },
+    { home: "England", away: "Croatia", venue: "AT&T Stadium", date: "2026-06-17T20:00:00Z" },
+    { home: "Ghana", away: "Panama", venue: "BMO Field", date: "2026-06-17T23:00:00Z" },
+    { home: "Uzbekistan", away: "Colombia", venue: "Estadio Azteca", date: "2026-06-18T02:00:00Z" },
+  ];
+
+  for (const m of matchData) {
+    await prisma.match.create({
+      data: {
+        homeTeamId: team(teams, m.home),
+        awayTeamId: team(teams, m.away),
+        stadiumId: stadium(stadiums, m.venue),
+        date: new Date(m.date),
       },
-      {
-        homeTeamId: team(teams, "South Korea"),
-        awayTeamId: team(teams, "UEFA Playoff D Winner"),
-        stadiumId: stadium(stadiums, "Estadio Akron"),
-        date: new Date("2026-06-12T02:00:00Z"),
-      },
-      // June 12
-      {
-        homeTeamId: team(teams, "Canada"),
-        awayTeamId: team(teams, "UEFA Playoff A Winner"),
-        stadiumId: stadium(stadiums, "BMO Field"),
-        date: new Date("2026-06-12T19:00:00Z"),
-      },
-      {
-        homeTeamId: team(teams, "USA"),
-        awayTeamId: team(teams, "Paraguay"),
-        stadiumId: stadium(stadiums, "SoFi Stadium"),
-        date: new Date("2026-06-13T01:00:00Z"),
-      },
-      // June 13
-      {
-        homeTeamId: team(teams, "Qatar"),
-        awayTeamId: team(teams, "Switzerland"),
-        stadiumId: stadium(stadiums, "Levi's Stadium"),
-        date: new Date("2026-06-13T19:00:00Z"),
-      },
-      {
-        homeTeamId: team(teams, "Brazil"),
-        awayTeamId: team(teams, "Morocco"),
-        stadiumId: stadium(stadiums, "MetLife Stadium"),
-        date: new Date("2026-06-13T22:00:00Z"),
-      },
-      {
-        homeTeamId: team(teams, "Haiti"),
-        awayTeamId: team(teams, "Scotland"),
-        stadiumId: stadium(stadiums, "Gillette Stadium"),
-        date: new Date("2026-06-14T01:00:00Z"),
-      },
-      {
-        homeTeamId: team(teams, "Australia"),
-        awayTeamId: team(teams, "UEFA Playoff C Winner"),
-        stadiumId: stadium(stadiums, "BC Place"),
-        date: new Date("2026-06-13T22:00:00Z"),
-      },
-      // June 14
-      {
-        homeTeamId: team(teams, "Germany"),
-        awayTeamId: team(teams, "Curaçao"),
-        stadiumId: stadium(stadiums, "NRG Stadium"),
-        date: new Date("2026-06-14T17:00:00Z"),
-      },
-      {
-        homeTeamId: team(teams, "Netherlands"),
-        awayTeamId: team(teams, "Japan"),
-        stadiumId: stadium(stadiums, "AT&T Stadium"),
-        date: new Date("2026-06-14T20:00:00Z"),
-      },
-      {
-        homeTeamId: team(teams, "Ivory Coast"),
-        awayTeamId: team(teams, "Ecuador"),
-        stadiumId: stadium(stadiums, "Lincoln Financial Field"),
-        date: new Date("2026-06-14T23:00:00Z"),
-      },
-      {
-        homeTeamId: team(teams, "UEFA Playoff B Winner"),
-        awayTeamId: team(teams, "Tunisia"),
-        stadiumId: stadium(stadiums, "Estadio BBVA"),
-        date: new Date("2026-06-15T02:00:00Z"),
-      },
-      // June 15
-      {
-        homeTeamId: team(teams, "Spain"),
-        awayTeamId: team(teams, "Cape Verde"),
-        stadiumId: stadium(stadiums, "Mercedes-Benz Stadium"),
-        date: new Date("2026-06-15T16:00:00Z"),
-      },
-      {
-        homeTeamId: team(teams, "Belgium"),
-        awayTeamId: team(teams, "Egypt"),
-        stadiumId: stadium(stadiums, "Lumen Field"),
-        date: new Date("2026-06-15T19:00:00Z"),
-      },
-      {
-        homeTeamId: team(teams, "Saudi Arabia"),
-        awayTeamId: team(teams, "Uruguay"),
-        stadiumId: stadium(stadiums, "Hard Rock Stadium"),
-        date: new Date("2026-06-15T22:00:00Z"),
-      },
-      {
-        homeTeamId: team(teams, "Iran"),
-        awayTeamId: team(teams, "New Zealand"),
-        stadiumId: stadium(stadiums, "SoFi Stadium"),
-        date: new Date("2026-06-16T01:00:00Z"),
-      },
-      // June 16
-      {
-        homeTeamId: team(teams, "France"),
-        awayTeamId: team(teams, "Senegal"),
-        stadiumId: stadium(stadiums, "MetLife Stadium"),
-        date: new Date("2026-06-16T19:00:00Z"),
-      },
-      {
-        homeTeamId: team(teams, "FIFA Playoff 2 Winner"),
-        awayTeamId: team(teams, "Norway"),
-        stadiumId: stadium(stadiums, "Gillette Stadium"),
-        date: new Date("2026-06-16T22:00:00Z"),
-      },
-      {
-        homeTeamId: team(teams, "Argentina"),
-        awayTeamId: team(teams, "Algeria"),
-        stadiumId: stadium(stadiums, "Arrowhead Stadium"),
-        date: new Date("2026-06-17T01:00:00Z"),
-      },
-      {
-        homeTeamId: team(teams, "Austria"),
-        awayTeamId: team(teams, "Jordan"),
-        stadiumId: stadium(stadiums, "Levi's Stadium"),
-        date: new Date("2026-06-17T04:00:00Z"),
-      },
-      // June 17
-      {
-        homeTeamId: team(teams, "Portugal"),
-        awayTeamId: team(teams, "FIFA Playoff 1 Winner"),
-        stadiumId: stadium(stadiums, "NRG Stadium"),
-        date: new Date("2026-06-17T17:00:00Z"),
-      },
-      {
-        homeTeamId: team(teams, "England"),
-        awayTeamId: team(teams, "Croatia"),
-        stadiumId: stadium(stadiums, "AT&T Stadium"),
-        date: new Date("2026-06-17T20:00:00Z"),
-      },
-      {
-        homeTeamId: team(teams, "Ghana"),
-        awayTeamId: team(teams, "Panama"),
-        stadiumId: stadium(stadiums, "BMO Field"),
-        date: new Date("2026-06-17T23:00:00Z"),
-      },
-      {
-        homeTeamId: team(teams, "Uzbekistan"),
-        awayTeamId: team(teams, "Colombia"),
-        stadiumId: stadium(stadiums, "Estadio Azteca"),
-        date: new Date("2026-06-18T02:00:00Z"),
-      },
-    ],
-  });
+    });
+  }
 
   console.log("✅ 24 group stage matches seeded (Matchday 1)");
 }

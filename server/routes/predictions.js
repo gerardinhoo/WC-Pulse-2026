@@ -1,64 +1,71 @@
 import express from "express";
 import { prisma } from "../lib/prisma.js";
 import { authMiddleware } from "../middleware/auth.js";
+import { validate, predictionSchema, paginationSchema } from "../src/validators.js";
 
+const router = express.Router();
 
-const router = express();
-
-// CREATE AND UPDATE PREDICTION
-router.post("/",authMiddleware, async (req, res) => {
+// CREATE OR UPDATE PREDICTION
+router.post("/", authMiddleware, validate(predictionSchema), async (req, res, next) => {
   try {
-    const {matchId, homeScore, awayScore } = req.body;
+    const { matchId, homeScore, awayScore } = req.body;
     const userId = req.user.userId;
 
+    // Prevent predictions on matches that already have results
+    const match = await prisma.match.findUnique({ where: { id: matchId } });
+    if (!match) {
+      return res.status(404).json({ error: "Match not found" });
+    }
+    if (match.homeScore !== null && match.awayScore !== null) {
+      return res.status(400).json({ error: "Cannot predict on a match that already has a result" });
+    }
+
     const prediction = await prisma.prediction.upsert({
-        where: {
-            userId_matchId: {
-                userId,
-                matchId
-            }
-        },
-        update: {
-            homeScore,
-            awayScore
-        },
-        create: {
-            userId,
-            matchId,
-            homeScore,
-            awayScore
-        }
+      where: {
+        userId_matchId: { userId, matchId },
+      },
+      update: { homeScore, awayScore },
+      create: { userId, matchId, homeScore, awayScore },
     });
 
     res.json(prediction);
   } catch (error) {
-    console.error(error)
-    res.status(500).json({error: "Failed to save prediction"})
+    next(error);
   }
-})
-
-// GET MY PREDICTIONS
-router.get("/my", authMiddleware, async (req, res) => {
-    try {
-        const userId = req.user.userId;
-
-        const predictions = await prisma.prediction.findMany({
-            where: { userId },
-            include: {
-                match: {
-                include: {
-                    homeTeam: true,
-                    awayTeam: true
-                }
-                }
-            }
 });
 
-      res.json(predictions)
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({error: "Failed to fetch predictions"})
-    }
-})
+// GET MY PREDICTIONS (paginated)
+router.get("/my", authMiddleware, async (req, res, next) => {
+  try {
+    const userId = req.user.userId;
+    const { page, limit } = paginationSchema.parse(req.query);
+    const skip = (page - 1) * limit;
+
+    const [predictions, total] = await Promise.all([
+      prisma.prediction.findMany({
+        where: { userId },
+        include: {
+          match: {
+            include: {
+              homeTeam: true,
+              awayTeam: true,
+            },
+          },
+        },
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+      }),
+      prisma.prediction.count({ where: { userId } }),
+    ]);
+
+    res.json({
+      data: predictions,
+      meta: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    });
+  } catch (error) {
+    next(error);
+  }
+});
 
 export default router;

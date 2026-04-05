@@ -35,19 +35,27 @@ model Match {
   date       DateTime
   homeScore  Int?
   awayScore  Int?
+  updatedAt  DateTime @default(now()) @updatedAt
 
   prediction Prediction[]
 
   homeTeam Team    @relation("HomeTeam", fields: [homeTeamId], references: [id])
   awayTeam Team    @relation("AwayTeam", fields: [awayTeamId], references: [id])
   stadium  Stadium @relation(fields: [stadiumId], references: [id])
+
+  @@index([date])
+  @@index([homeTeamId])
+  @@index([awayTeamId])
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
+  id          Int      @id @default(autoincrement())
+  email       String   @unique
+  displayName String?
+  password    String
+  role        String   @default("user")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
 
   prediction Prediction[]
 }
@@ -59,9 +67,11 @@ model Prediction {
   homeScore Int
   awayScore Int
   createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
   user  User  @relation(fields: [userId], references: [id])
   match Match @relation(fields: [matchId], references: [id])
 
   @@unique([userId, matchId]) // one prediction per user per match
+  @@index([userId])
 }

@@ -1,6 +1,5 @@
 import jwt from "jsonwebtoken";
-
-const JWT_SECRET = "supersecret";
+import { JWT_SECRET } from "../src/config.js";
 
 export function authMiddleware(req, res, next) {
   const authHeader = req.headers.authorization;

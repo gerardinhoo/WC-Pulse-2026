@@ -3,22 +3,12 @@ import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-
-
-function Matches() {
-  return <div>Matches Page</div>;
-}
-
-function Leaderboard() {
-  return <div>Leaderboard Page</div>;
-}
+import Matches from "./pages/Matches";
+import Leaderboard from "./pages/Leaderboard";
+import AdminResults from "./pages/AdminResults";
 
 function MyPredictions() {
   return <div>My Predictions Page</div>;
-}
-
-function AdminResults() {
-  return <div>Admin Results Page</div>;
 }
 
 function NotFound() {

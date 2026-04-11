@@ -1,4 +1,4 @@
-# WC Pulse 2026
+# Pitch Pulse 26
 
 A full-stack World Cup 2026 prediction app where users predict match scores, earn points, and compete on a leaderboard.
 

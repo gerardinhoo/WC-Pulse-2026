@@ -27,8 +27,8 @@ export default function Home() {
             <span className="text-[var(--color-accent)]">Win.</span>
           </h1>
           <p className="text-lg sm:text-xl text-[var(--color-text-muted)] mb-8 animate-slide-up" style={{ animationDelay: "100ms" }}>
-            Pick your scores for every World Cup 2026 match. Climb the
-            leaderboard. Prove you know football better than everyone else.
+            Pick your scores for every group stage of World Cup 2026 match. Climb the
+            leaderboard. Prove you can accurately predict football scores better than everyone else.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 animate-slide-up" style={{ animationDelay: "200ms" }}>
             <Link
@@ -62,7 +62,10 @@ export default function Home() {
             <div className="text-3xl mb-3">⚽</div>
             <h3 className="font-semibold mb-1">Earn Points</h3>
             <p className="text-sm text-[var(--color-text-muted)]">
-              3 points for an exact score, 1 point for the correct result.
+              3 points for the exact score.
+            </p>
+            <p className="text-sm text-[var(--color-text-muted)]">
+              1 point for the correct winner or draw.
             </p>
           </div>
           <div className="card text-center">

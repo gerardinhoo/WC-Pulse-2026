@@ -27,10 +27,10 @@ resource "aws_amplify_app" "frontend" {
   YAML
 
   environment_variables = {
-    VITE_API_URL = aws_apigatewayv2_api.http.api_endpoint
+    VITE_API_URL = "${aws_apigatewayv2_api.http.api_endpoint}/api"
   }
 
-  # SPA rewrites — serve static assets normally, fallback to index.html
+  # SPA rewrites
   custom_rule {
     source = "</^[^.]+$|\\.(?!(css|gif|ico|jpg|js|png|txt|svg|woff|woff2|ttf|map|json|webp)$)([^.]+$)/>"
     status = "200"
@@ -47,6 +47,6 @@ resource "aws_amplify_branch" "main" {
   stage     = "PRODUCTION"
 
   environment_variables = {
-    VITE_API_URL = aws_apigatewayv2_api.http.api_endpoint
+    VITE_API_URL = "${aws_apigatewayv2_api.http.api_endpoint}/api"
   }
 }

@@ -1,0 +1,64 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ci:
+    name: Lint & Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install client dependencies
+        run: npm ci
+        working-directory: client
+
+      - name: Lint
+        run: npm run lint
+        working-directory: client
+
+      - name: Typecheck & Build
+        run: npm run build
+        working-directory: client
+
+  deploy-backend:
+    name: Deploy Lambda
+    needs: ci
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+
+      - name: Build Lambda zip
+        run: bash scripts/build-lambda.sh
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Upload to S3 & update Lambda
+        run: |
+          aws s3 cp dist/lambda.zip s3://pitchpulse26-lambda-artifacts/lambda.zip
+          aws lambda update-function-code \
+            --function-name pitchpulse26-api \
+            --s3-bucket pitchpulse26-lambda-artifacts \
+            --s3-key lambda.zip

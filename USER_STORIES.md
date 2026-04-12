@@ -440,7 +440,7 @@
 
 ---
 
-## Epic 9: AWS Deployment & DevOps [TODO]
+## Epic 9: AWS Deployment & DevOps [DONE]
 
 ### PP-027: Database Migration to PostgreSQL
 **As a** developer

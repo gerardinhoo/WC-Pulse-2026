@@ -49,17 +49,22 @@ app.use((err, req, res, next) => {
   res.status(status).json({ error: message });
 });
 
-// ── Graceful shutdown ──
-const server = app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+// Export app for Lambda handler
+export { app };
 
-process.on("SIGTERM", () => {
-  console.log("SIGTERM received — shutting down");
-  server.close(() => process.exit(0));
-});
+// Only start the server when running locally (not on Lambda)
+if (process.env.AWS_LAMBDA_FUNCTION_NAME === undefined) {
+  const server = app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
 
-process.on("SIGINT", () => {
-  console.log("SIGINT received — shutting down");
-  server.close(() => process.exit(0));
-});
+  process.on("SIGTERM", () => {
+    console.log("SIGTERM received — shutting down");
+    server.close(() => process.exit(0));
+  });
+
+  process.on("SIGINT", () => {
+    console.log("SIGINT received — shutting down");
+    server.close(() => process.exit(0));
+  });
+}

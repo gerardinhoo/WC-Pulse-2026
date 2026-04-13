@@ -355,7 +355,7 @@
 
 ---
 
-### PP-036: Site Footer [TODO]
+### PP-036: Site Footer [DONE]
 **As a** user
 **I want** a footer on every page
 **So that** I can find project info, links, and credits
@@ -440,9 +440,9 @@
 
 ---
 
-## Epic 9: AWS Deployment & DevOps [TODO]
+## Epic 9: AWS Deployment & DevOps
 
-### PP-027: Database Migration to PostgreSQL
+### PP-027: Database Migration to PostgreSQL [DONE]
 **As a** developer
 **I want to** migrate from SQLite to PostgreSQL
 **So that** the app handles concurrent users in production
@@ -458,7 +458,7 @@
 
 ---
 
-### PP-028: Serverless Backend on AWS Lambda
+### PP-028: Serverless Backend on AWS Lambda [DONE]
 **As a** developer
 **I want to** deploy the Express API as a Lambda function
 **So that** it scales automatically within free tier (1M requests/month)
@@ -474,7 +474,7 @@
 
 ---
 
-### PP-029: Frontend Deployment on AWS Amplify
+### PP-029: Frontend Deployment on AWS Amplify [DONE]
 **As a** developer
 **I want to** deploy the React frontend on AWS Amplify
 **So that** it has automatic CI/CD with free HTTPS
@@ -491,7 +491,7 @@
 
 ---
 
-### PP-030: Infrastructure as Code (Terraform)
+### PP-030: Infrastructure as Code (Terraform) [DONE]
 **As a** developer
 **I want** all AWS resources defined in Terraform
 **So that** infrastructure is reproducible and version-controlled
@@ -499,7 +499,7 @@
 **Acceptance Criteria:**
 - Terraform defines: Lambda, API Gateway, SSM parameters, IAM roles, Amplify app, CloudWatch
 - IAM roles follow least-privilege principle
-- State stored in S3 backend with DynamoDB locking
+- State stored in S3 backend
 - `terraform plan` / `terraform apply` documented in README
 - All resources tagged with project name
 
@@ -507,24 +507,25 @@
 
 ---
 
-### PP-031: CI/CD Pipeline (GitHub Actions)
+### PP-031: CI/CD Pipeline (GitHub Actions) [DONE]
 **As a** developer
 **I want** automated checks and deployment on every push
 **So that** broken code doesn't reach production
 
 **Acceptance Criteria:**
 - GitHub Actions workflow on push/PR to main
-- Pipeline: lint → typecheck → test → build → deploy
+- Pipeline: lint → typecheck → build → deploy
 - Backend deployed to Lambda on merge to main
 - Frontend auto-deployed via Amplify Git integration
 - Pipeline blocks merge on failure
 - Secrets in GitHub Actions secrets (not in code)
+- Dedicated CI IAM user with minimal permissions
 
 **Priority:** High | **Labels:** devops, ci-cd
 
 ---
 
-### PP-032: Secrets Management (AWS SSM)
+### PP-032: Secrets Management (AWS SSM) [DONE]
 **As a** developer
 **I want** secrets in AWS SSM Parameter Store
 **So that** sensitive values are never in code
@@ -585,62 +586,3 @@
 
 **Priority:** Low | **Labels:** devops, reliability
 
----
-
-## Deployment Strategies & Interview Talking Points
-
-### Serverless Architecture
-- **What:** Express API runs on AWS Lambda behind API Gateway — no servers to manage
-- **Why it matters:** Auto-scales from 0 to thousands of requests. Zero cost at idle. This is the modern cloud standard for small-to-medium apps.
-- **Interview angle:** "I chose serverless over EC2 to eliminate server maintenance and achieve automatic horizontal scaling. Lambda's pay-per-request model means zero cost during low traffic and infinite scalability during World Cup match days."
-
-### Infrastructure as Code (Terraform)
-- **What:** Every AWS resource (Lambda, API Gateway, IAM roles, SSM, CloudWatch) defined in `.tf` files
-- **Why it matters:** Infrastructure is reproducible, version-controlled, and reviewable in PRs — no manual "click-ops" in the AWS console.
-- **Interview angle:** "I can destroy and recreate the entire production environment in under 5 minutes with `terraform apply`. This also enables my Disaster Recovery strategy — I can deploy to a secondary region by changing one variable."
-
-### CI/CD Pipeline (GitHub Actions)
-- **What:** Automated lint → typecheck → test → build → deploy on every push to main
-- **Why it matters:** Prevents broken code from reaching production. Every merge is a production deployment.
-- **Interview angle:** "My pipeline enforces quality gates before any code ships. The frontend deploys via Amplify's Git integration, and the backend deploys to Lambda through GitHub Actions — achieving continuous deployment with zero manual steps."
-
-### Secrets Management (AWS SSM Parameter Store)
-- **What:** JWT_SECRET and DATABASE_URL stored as encrypted SecureStrings in SSM, not in code or env files
-- **Why it matters:** Secrets never appear in Git history, CI logs, or Lambda environment variables visible in the console.
-- **Interview angle:** "I follow the principle of least privilege — Lambda's IAM role only has permission to read specific SSM parameters, and secrets are encrypted at rest with KMS."
-
-### Blue/Green Deployment (Lambda Aliases)
-- **What:** New Lambda versions deployed alongside the old one. Traffic shifts after health check passes.
-- **Why it matters:** Zero-downtime deployments. Instant rollback if the new version errors.
-- **Interview angle:** "I use Lambda aliases with weighted traffic shifting. If the new deployment's error rate exceeds 5%, CloudWatch alarms trigger an automatic rollback — users never see a broken API."
-
-### Observability (CloudWatch)
-- **What:** Dashboard tracking Lambda invocations, error rates, latency (p50/p95/p99), API Gateway 4xx/5xx
-- **Why it matters:** You can't fix what you can't measure. Alarms notify before users notice.
-- **Interview angle:** "I built a CloudWatch dashboard that gives me real-time visibility into API health. I have alarms set at 5% error rate that page me via SNS — this is the same approach used by production SRE teams."
-
-### Load Testing (Artillery)
-- **What:** Simulated traffic ramps from 1 to 100 concurrent users, documenting p50/p95/p99 latencies
-- **Why it matters:** Proves the app handles real-world traffic, not just a single curl request.
-- **Interview angle:** "I ran load tests simulating World Cup match-day traffic — 100 concurrent users hitting the prediction and leaderboard APIs. I documented the results and correlated them with CloudWatch metrics to identify bottlenecks."
-
-### Disaster Recovery (Pilot Light)
-- **What:** Terraform can deploy the full stack to a second AWS region. Database has point-in-time recovery.
-- **Why it matters:** Shows you think about business continuity, not just happy-path development.
-- **Interview angle:** "My DR strategy is Pilot Light — the secondary region has no running resources (zero cost), but I can spin up the entire stack in under 30 minutes using Terraform. My RPO is under 1 hour thanks to Neon's point-in-time recovery."
-
----
-
-## Cost Summary (AWS Free Tier)
-
-| Service | Free Tier | Expiry |
-|---------|-----------|--------|
-| Lambda | 1M requests/month | Never |
-| API Gateway | 1M requests/month | 12 months |
-| Amplify Hosting | 5GB storage, 15GB bandwidth | Never |
-| SSM Parameter Store | Standard tier | Never |
-| CloudWatch | Basic metrics, 5GB logs | Never |
-| SES (email) | 3,000 emails/month from Lambda | Never |
-| PostgreSQL (Neon/Supabase) | 0.5GB–10GB free tier | Never |
-| Custom domain (Route 53) | ~$12/year | Paid |
-| Custom domain (Amplify subdomain) | *.amplifyapp.com + SSL | Free |

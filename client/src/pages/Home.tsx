@@ -33,7 +33,7 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 animate-slide-up" style={{ animationDelay: "200ms" }}>
             <Link
               to={user ? "/matches" : "/register"}
-              className="px-6 py-3 rounded-lg bg-[var(--color-accent)] text-white font-semibold text-lg hover:bg-[var(--color-accent-hover)] transition-colors shadow-lg shadow-emerald-900/30"
+              className="px-6 py-3 rounded-lg bg-[var(--color-accent)] text-white font-semibold text-lg hover:bg-[var(--color-accent-hover)] transition-colors shadow-lg shadow-emerald-900/30 btn-glow"
             >
               {user ? "View Matches" : "Start Predicting"}
             </Link>

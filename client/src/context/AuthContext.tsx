@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import api from "../api/axios";
 import { AuthContext } from "../hooks/useAuth";
 
@@ -35,7 +35,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [token, setToken] = useState<string | null>(localStorage.getItem("token"));
   const [loading, setLoading] = useState(true);
 
-  const refreshMe = async () => {
+  const refreshMe = useCallback(async () => {
     const savedToken = localStorage.getItem("token");
     if (!savedToken) {
       setUser(null);
@@ -53,30 +53,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     refreshMe();
-  }, []);
+  }, [refreshMe]);
 
-  const login = async (payload: LoginPayload) => {
+  const login = useCallback(async (payload: LoginPayload) => {
     const res = await api.post("/auth/login", payload);
     const nextToken = res.data.token;
 
     localStorage.setItem("token", nextToken);
     setToken(nextToken);
     await refreshMe();
-  };
+  }, [refreshMe]);
 
-  const register = async (payload: RegisterPayload) => {
+  const register = useCallback(async (payload: RegisterPayload) => {
     await api.post("/auth/register", payload);
-  };
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem("token");
     setToken(null);
     setUser(null);
-  };
+  }, []);
 
   const value = useMemo(
     () => ({
@@ -88,7 +88,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       logout,
       refreshMe,
     }),
-    [user, token, loading, login]
+    [user, token, loading, login, register, logout, refreshMe]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

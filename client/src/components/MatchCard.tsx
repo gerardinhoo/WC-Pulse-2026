@@ -46,7 +46,7 @@ export default function MatchCard({
       {/* Right: score or input */}
       <div className="shrink-0">
         {hasResult ? (
-          <div className="text-center">
+          <div className="text-center animate-score-pop">
             <p className="text-xl font-bold tabular-nums">
               {homeScore} <span className="text-[var(--color-text-muted)]">–</span> {awayScore}
             </p>

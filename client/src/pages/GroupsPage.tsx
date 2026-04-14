@@ -31,25 +31,50 @@ export default function GroupsPage() {
 
   const [groups, setGroups] = useState<string[]>([])
   const [standings, setStandings] = useState<TeamStanding[]>([])
+
   const selectedGroup = groupId || "A"
 
-  const fetchGroups = useCallback ( async () => {
-    const res = await api.get("/groups")
-    setGroups(res.data.map((g: Group) => g.name))
-  }, [])
+  useEffect(() => {
+    let ignore = false;
 
-  const fetchStandings = useCallback ( async (g: string) => {
-    const res = await api.get(`/groups/${g}`)
-    setStandings(res.data)
-}, [])
+    const loadGroups = async () => {
+      try {
+        const res = await api.get<Group[]>("/groups");
+        if (!ignore) {
+          setGroups(res.data.map((g) => g.name));
+        }
+      } catch (error) {
+        console.error("Failed to fetch groups", error);
+      }
+    };
+
+    void loadGroups();
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   useEffect(() => {
-    fetchGroups()
-  }, [fetchGroups])
+    let ignore = false;
 
-  useEffect(() => {
-    fetchStandings(selectedGroup)
-  }, [fetchStandings, selectedGroup])
+    const loadStandings = async () => {
+      try {
+        const res = await api.get<TeamStanding[]>(`/groups/${selectedGroup}`);
+        if (!ignore) {
+          setStandings(res.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch standings", error);
+      }
+    };
+
+    void loadStandings();
+
+    return () => {
+      ignore = true;
+    };
+  }, [selectedGroup]);
 
 
   return (

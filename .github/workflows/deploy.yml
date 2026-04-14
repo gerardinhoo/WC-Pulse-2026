@@ -62,3 +62,15 @@ jobs:
             --function-name pitchpulse26-api \
             --s3-bucket pitchpulse26-lambda-artifacts \
             --s3-key lambda.zip
+          aws lambda wait function-updated --function-name pitchpulse26-api
+
+      - name: Post-deploy health check
+        run: |
+          echo "Waiting 5s for Lambda cold start..."
+          sleep 5
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://fqblsiujfj.execute-api.us-east-1.amazonaws.com/api/health)
+          if [ "$STATUS" != "200" ]; then
+            echo "Health check failed with status $STATUS"
+            exit 1
+          fi
+          echo "Health check passed (HTTP $STATUS)"

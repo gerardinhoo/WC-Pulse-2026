@@ -5,7 +5,6 @@ import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom"
 
 
-
 type TeamStanding = {
   position: number
   teamId: number
@@ -20,18 +19,21 @@ type TeamStanding = {
   Pts: number
 }
 
+type Group = {
+  name: string
+}
+
 export default function GroupsPage() {
   const { groupId } = useParams()
   const navigate = useNavigate()
 
   const [groups, setGroups] = useState<string[]>([])
-  const [selectedGroup, setSelectedGroup] = useState(groupId || "A")
   const [standings, setStandings] = useState<TeamStanding[]>([])
-
+  const selectedGroup = groupId || "A"
 
   const fetchGroups = async () => {
     const res = await api.get("/groups")
-    setGroups(res.data.map((g: any) => g.name))
+    setGroups(res.data.map((g: Group) => g.name))
   }
 
   const fetchStandings = async (g: string) => {
@@ -47,12 +49,6 @@ export default function GroupsPage() {
     fetchStandings(selectedGroup)
   }, [selectedGroup])
 
-  useEffect(() => {
-    if (groupId) {
-      setSelectedGroup(groupId)
-    }
-  }, [groupId])
-
 
   return (
     <div className="p-6 text-white">
@@ -63,10 +59,7 @@ export default function GroupsPage() {
         {groups.map(g => (
           <button
             key={g}
-            onClick={() => {
-            setSelectedGroup(g)
-            navigate(`/groups/${g}`)
-            }}
+            onClick={() => navigate(`/groups/${g}`)}
             className={`
             relative px-4 py-3 rounded-xl font-semibold
             transition-all duration-300

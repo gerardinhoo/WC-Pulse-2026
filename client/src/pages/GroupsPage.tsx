@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import api from "../api/axios";
 import { motion } from "framer-motion";
 import { useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom";
+import { useCallback } from "react"
+
 
 
 type TeamStanding = {
@@ -31,23 +33,23 @@ export default function GroupsPage() {
   const [standings, setStandings] = useState<TeamStanding[]>([])
   const selectedGroup = groupId || "A"
 
-  const fetchGroups = async () => {
+  const fetchGroups = useCallback ( async () => {
     const res = await api.get("/groups")
     setGroups(res.data.map((g: Group) => g.name))
-  }
+  }, [])
 
-  const fetchStandings = async (g: string) => {
+  const fetchStandings = useCallback ( async (g: string) => {
     const res = await api.get(`/groups/${g}`)
     setStandings(res.data)
-}
+}, [])
 
   useEffect(() => {
     fetchGroups()
-  }, [])
+  }, [fetchGroups])
 
   useEffect(() => {
     fetchStandings(selectedGroup)
-  }, [selectedGroup])
+  }, [fetchStandings, selectedGroup])
 
 
   return (

@@ -1,6 +1,10 @@
+import Flag from "./Flag";
+
 type Props = {
   homeTeam: string;
   awayTeam: string;
+  homeCode?: string | null;
+  awayCode?: string | null;
   date: string;
   homeScore: number | null;
   awayScore: number | null;
@@ -12,6 +16,8 @@ type Props = {
 export default function MatchCard({
   homeTeam,
   awayTeam,
+  homeCode,
+  awayCode,
   date,
   homeScore,
   awayScore,
@@ -25,9 +31,10 @@ export default function MatchCard({
     <div className="card flex items-center justify-between gap-4">
       {/* Left: teams + date */}
       <div className="min-w-0 flex-1">
-        <p className="font-semibold text-sm sm:text-base truncate">
-          {homeTeam} <span className="text-[var(--color-text-muted)]">vs</span>{" "}
-          {awayTeam}
+        <p className="font-semibold text-sm sm:text-base truncate flex items-center gap-1.5 flex-wrap">
+          <Flag code={homeCode} size={16} /> {homeTeam}
+          <span className="text-[var(--color-text-muted)]">vs</span>
+          <Flag code={awayCode} size={16} /> {awayTeam}
         </p>
         <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
           {new Date(date).toLocaleDateString("en-US", {

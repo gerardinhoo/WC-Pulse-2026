@@ -7,6 +7,7 @@ function initStandings(teams) {
   teams.forEach(team => {
     table[team.id] = {
       name: team.name,
+      code: team.code,
       country: team.name,
       group: team.group,
       MP: 0,

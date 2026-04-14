@@ -11,6 +11,7 @@ model Team {
   id        Int      @id @default(autoincrement())
   name      String
   country   String
+  code      String?
   group     String
   createdAt DateTime @default(now())
 

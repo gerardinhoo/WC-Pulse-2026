@@ -7,8 +7,8 @@ import Spinner from "../components/Spinner";
 type Match = {
   id: number;
   date: string;
-  homeTeam: { name: string };
-  awayTeam: { name: string };
+  homeTeam: { name: string; code?: string };
+  awayTeam: { name: string; code?: string };
   homeScore: number | null;
   awayScore: number | null;
 };
@@ -104,6 +104,8 @@ export default function AdminResults() {
                 key={match.id}
                 homeTeam={match.homeTeam.name}
                 awayTeam={match.awayTeam.name}
+                homeCode={match.homeTeam.code}
+                awayCode={match.awayTeam.code}
                 date={match.date}
                 homeScore={match.homeScore}
                 awayScore={match.awayScore}
@@ -134,6 +136,8 @@ export default function AdminResults() {
                 key={match.id}
                 homeTeam={match.homeTeam.name}
                 awayTeam={match.awayTeam.name}
+                homeCode={match.homeTeam.code}
+                awayCode={match.awayTeam.code}
                 date={match.date}
                 homeScore={match.homeScore}
                 awayScore={match.awayScore}

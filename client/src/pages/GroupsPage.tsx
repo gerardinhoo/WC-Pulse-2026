@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import Spinner from "../components/Spinner";
+import Flag from "../components/Flag";
 
 type TeamStanding = {
   position: number;
   name: string;
+  code?: string;
   MP: number;
   W: number;
   D: number;
@@ -127,7 +129,12 @@ export default function GroupsPage() {
                         team.position
                       )}
                     </td>
-                    <td className="px-4 py-3 font-medium">{team.name}</td>
+                    <td className="px-4 py-3 font-medium">
+                      <span className="inline-flex items-center gap-2">
+                        <Flag code={team.code} size={16} />
+                        {team.name}
+                      </span>
+                    </td>
                     <td className="px-2 py-3 text-center text-[var(--color-text-muted)]">{team.MP}</td>
                     <td className="px-2 py-3 text-center">{team.W}</td>
                     <td className="px-2 py-3 text-center text-[var(--color-text-muted)]">{team.D}</td>

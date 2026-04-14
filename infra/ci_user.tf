@@ -21,6 +21,7 @@ data "aws_iam_policy_document" "ci" {
     actions = [
       "lambda:UpdateFunctionCode",
       "lambda:GetFunction",
+      "lambda:GetFunctionConfiguration",
     ]
     resources = [aws_lambda_function.api.arn]
   }

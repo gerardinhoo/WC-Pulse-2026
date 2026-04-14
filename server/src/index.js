@@ -13,9 +13,30 @@ import groupsRoutes from "../routes/groups.js";
 
 const app = express();
 
+
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "https://pitchpulse26.com",
+  "https://www.pitchpulse26.com",
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
+
 // ── Security middleware ──
 app.use(helmet());
-app.use(cors({ origin: CORS_ORIGIN }));
+// app.use(cors({ origin: CORS_ORIGIN }));
 app.use(express.json({ limit: "10kb" }));
 
 // Rate limit auth endpoints to prevent brute-force
@@ -33,6 +54,11 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/teams", teamsRoutes);
 app.use("/api/matches", matchesRoutes);
 app.use("/api/groups", groupsRoutes);
+
+app.use((err, req, res, next) => {
+  console.error("🔥 ERROR:", err);
+  res.status(500).json({ message: "Internal Server Error" });
+});
 
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok" });

@@ -8,3 +8,6 @@ export const CORS_ORIGIN = process.env.CORS_ORIGIN || "http://localhost:5173";
 if (!JWT_SECRET) {
   throw new Error("JWT_SECRET environment variable is required");
 }
+
+
+

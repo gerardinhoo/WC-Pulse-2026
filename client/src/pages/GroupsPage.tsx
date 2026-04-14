@@ -3,7 +3,6 @@ import api from "../api/axios";
 import { motion } from "framer-motion";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { useCallback } from "react"
 
 
 

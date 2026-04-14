@@ -71,6 +71,7 @@ resource "aws_lambda_function" "api" {
   environment {
     variables = {
       NODE_ENV     = "production"
+      NODE_OPTIONS = "--experimental-strip-types --disable-warning=ExperimentalWarning"
       JWT_SECRET   = aws_ssm_parameter.jwt_secret.value
       DATABASE_URL = aws_ssm_parameter.database_url.value
       CORS_ORIGIN  = aws_ssm_parameter.cors_origin.value

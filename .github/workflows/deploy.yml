@@ -45,6 +45,14 @@ jobs:
           cache: npm
           cache-dependency-path: server/package-lock.json
 
+      - name: Install server dependencies
+        run: npm ci
+        working-directory: server
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+        working-directory: server
+
       - name: Build Lambda zip
         run: bash scripts/build-lambda.sh
 

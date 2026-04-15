@@ -13,7 +13,6 @@ import groupsRoutes from "../routes/groups.js";
 
 const app = express();
 
-
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
@@ -21,23 +20,26 @@ const allowedOrigins = [
   "https://www.pitchpulse26.com",
 ];
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-  })
-);
-
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.log("❌ Blocked by CORS:", origin);
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+};
+ 
 // ── Security middleware ──
 app.use(helmet());
 // app.use(cors({ origin: CORS_ORIGIN }));
+app.use(cors(corsOptions));
 app.use(express.json({ limit: "10kb" }));
+app.options("*", cors(corsOptions));
 
 // Rate limit auth endpoints to prevent brute-force
 const authLimiter = rateLimit({
@@ -54,6 +56,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/teams", teamsRoutes);
 app.use("/api/matches", matchesRoutes);
 app.use("/api/groups", groupsRoutes);
+
 
 app.use((err, req, res, next) => {
   console.error("🔥 ERROR:", err);

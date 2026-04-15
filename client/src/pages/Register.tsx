@@ -18,10 +18,15 @@ export default function Register() {
     setSubmitting(true);
 
     try {
-      await register({ email, password, displayName });
+      await register({
+      email: email.trim(),
+      password: password.trim(),
+      displayName: displayName.trim(),
+    });
       await login({ email, password });
       navigate("/matches");
     } catch (err: unknown) {
+      console.log("REGISTER ERROR:", err);
       const axiosErr = err as { response?: { data?: { error?: string; details?: Record<string, string[]> } } };
       const data = axiosErr.response?.data;
       // Show field-level errors from Zod validation if available

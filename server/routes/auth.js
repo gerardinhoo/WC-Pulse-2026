@@ -11,11 +11,7 @@ const router = express.Router();
 // REGISTER
 router.post("/register", validate(registerSchema), async (req, res, next) => {
   try {
-    console.log("Register request:", req.body);
     const { email, password, displayName } = req.body;
-
-    console.log("Parsed:", { displayName, email, password });
-
 
     const hashedPassword = await bcrypt.hash(password, 10);
 

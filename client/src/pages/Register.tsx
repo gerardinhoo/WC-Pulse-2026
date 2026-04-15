@@ -71,7 +71,7 @@ export default function Register() {
         />
 
        <input
-        type="password"
+        type="text"
         name="password"
         autoComplete="new-password"
         autoCorrect="off"

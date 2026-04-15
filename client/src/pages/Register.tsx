@@ -72,6 +72,9 @@ export default function Register() {
 
         <input
           type="password"
+          name="password"
+          autoComplete="new-password"
+          inputMode="text"
           placeholder="Password (min 8 characters)"
           className="w-full mb-4"
           value={password}

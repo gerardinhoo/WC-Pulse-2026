@@ -71,17 +71,19 @@ export default function Register() {
         />
 
        <input
-          type="text"
-          style={{
-            position: "fixed",
-            top: "200px",
-            left: "20px",
-            zIndex: 999999,
-            background: "white",
-            color: "black",
-            padding: "10px",
-          }}
-       />
+        type="text"
+        defaultValue=""
+        style={{
+          position: "fixed",
+          top: "200px",
+          left: "20px",
+          zIndex: 999999,
+          background: "white",
+          color: "black",
+          padding: "10px",
+          width: "200px"
+        }}
+      />
 
         <button
           type="submit"

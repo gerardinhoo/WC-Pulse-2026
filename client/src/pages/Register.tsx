@@ -7,10 +7,7 @@ export default function Register() {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
-  
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [password, setPassword] = useState("");
-
   const [displayName, setDisplayName] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -74,18 +71,15 @@ export default function Register() {
         />
 
        <input
-        type="text"
-        defaultValue=""
-        style={{
-          position: "fixed",
-          top: "200px",
-          left: "20px",
-          zIndex: 999999,
-          background: "white",
-          color: "black",
-          padding: "10px",
-          width: "200px"
-        }}
+        type="password"
+        name="password"
+        autoComplete="new-password"
+        autoCorrect="off"
+        autoCapitalize="off"
+        spellCheck={false}
+        inputMode="text"
+        className="w-full mb-4 relative z-50 bg-white text-black"
+        value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
 

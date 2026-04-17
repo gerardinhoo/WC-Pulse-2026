@@ -24,7 +24,9 @@ export default function AdminResults() {
   useEffect(() => {
     const fetchMatches = async () => {
       try {
-        const res = await api.get("/matches");
+        // Admins need the full list to split into Pending/Completed;
+        // request the server max so no matches get hidden by pagination.
+        const res = await api.get("/matches", { params: { limit: 100 } });
         setMatches(res.data.data);
 
         const existing: Record<number, ScoreEntry> = {};

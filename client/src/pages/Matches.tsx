@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import api from "../api/axios";
 import MatchCard from "../components/MatchCard";
+import Pagination from "../components/Pagination";
 import ScoreInput from "../components/ScoreInput";
 import Spinner from "../components/Spinner";
 
@@ -15,21 +17,35 @@ type Match = {
 
 type PredictionInput = { homeScore: string; awayScore: string; saved?: boolean };
 
+const PAGE_SIZE = 20;
+
+function parsePage(value: string | null): number {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed >= 1 ? Math.floor(parsed) : 1;
+}
+
 export default function Matches() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const page = parsePage(searchParams.get("page"));
+
   const [matches, setMatches] = useState<Match[]>([]);
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [predictions, setPredictions] = useState<Record<number, PredictionInput>>({});
   const [submitting, setSubmitting] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
         const [matchesRes, predictionsRes] = await Promise.all([
-          api.get("/matches"),
-          api.get("/predictions/my").catch(() => null),
+          api.get("/matches", { params: { page, limit: PAGE_SIZE } }),
+          // Fetch up to the server max so predictions cover every page of matches.
+          api.get("/predictions/my", { params: { limit: 100 } }).catch(() => null),
         ]);
 
         setMatches(matchesRes.data.data);
+        setTotalPages(matchesRes.data.meta?.totalPages ?? 1);
 
         if (predictionsRes?.data?.data) {
           const saved: Record<number, PredictionInput> = {};
@@ -50,7 +66,27 @@ export default function Matches() {
     };
 
     fetchData();
-  }, []);
+    // Scroll to top when changing pages for a cleaner transition
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [page]);
+
+  // If the server reports fewer pages than requested (e.g. deep-linked ?page=99),
+  // clamp the URL to the last valid page.
+  useEffect(() => {
+    if (!loading && page > totalPages) {
+      const next = new URLSearchParams(searchParams);
+      if (totalPages > 1) next.set("page", String(totalPages));
+      else next.delete("page");
+      setSearchParams(next, { replace: true });
+    }
+  }, [loading, page, totalPages, searchParams, setSearchParams]);
+
+  const handlePageChange = (next: number) => {
+    const params = new URLSearchParams(searchParams);
+    if (next <= 1) params.delete("page");
+    else params.set("page", String(next));
+    setSearchParams(params);
+  };
 
   const handleChange = (matchId: number, field: "homeScore" | "awayScore", value: string) => {
     setPredictions((prev) => ({
@@ -99,41 +135,49 @@ export default function Matches() {
           </p>
         </div>
       ) : (
-      <div className="space-y-3 stagger-children">
-        {matches.map((match) => {
-          const pred = predictions[match.id];
-          const hasResult = match.homeScore !== null && match.awayScore !== null;
+        <>
+          <div className="space-y-3 stagger-children">
+            {matches.map((match) => {
+              const pred = predictions[match.id];
+              const hasResult = match.homeScore !== null && match.awayScore !== null;
 
-          const statusLabel = pred?.saved && !hasResult
-            ? `Your prediction: ${pred.homeScore} – ${pred.awayScore}`
-            : undefined;
+              const statusLabel = pred?.saved && !hasResult
+                ? `Your prediction: ${pred.homeScore} – ${pred.awayScore}`
+                : undefined;
 
-          return (
-            <MatchCard
-              key={match.id}
-              homeTeam={match.homeTeam.name}
-              awayTeam={match.awayTeam.name}
-              homeCode={match.homeTeam.code}
-              awayCode={match.awayTeam.code}
-              date={match.date}
-              homeScore={match.homeScore}
-              awayScore={match.awayScore}
-              statusLabel={statusLabel}
-              statusColor="text-emerald-400"
-            >
-              <ScoreInput
-                homeScore={pred?.homeScore || ""}
-                awayScore={pred?.awayScore || ""}
-                onChange={(field, value) => handleChange(match.id, field, value)}
-                onSubmit={() => handleSubmit(match.id)}
-                submitLabel={pred?.saved ? "Update" : "Submit"}
-                submitting={submitting === match.id}
-                variant={pred?.saved ? "saved" : "default"}
-              />
-            </MatchCard>
-          );
-        })}
-      </div>
+              return (
+                <MatchCard
+                  key={match.id}
+                  homeTeam={match.homeTeam.name}
+                  awayTeam={match.awayTeam.name}
+                  homeCode={match.homeTeam.code}
+                  awayCode={match.awayTeam.code}
+                  date={match.date}
+                  homeScore={match.homeScore}
+                  awayScore={match.awayScore}
+                  statusLabel={statusLabel}
+                  statusColor="text-emerald-400"
+                >
+                  <ScoreInput
+                    homeScore={pred?.homeScore || ""}
+                    awayScore={pred?.awayScore || ""}
+                    onChange={(field, value) => handleChange(match.id, field, value)}
+                    onSubmit={() => handleSubmit(match.id)}
+                    submitLabel={pred?.saved ? "Update" : "Submit"}
+                    submitting={submitting === match.id}
+                    variant={pred?.saved ? "saved" : "default"}
+                  />
+                </MatchCard>
+              );
+            })}
+          </div>
+
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        </>
       )}
     </div>
   );

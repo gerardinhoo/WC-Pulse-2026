@@ -14,13 +14,15 @@ export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [lastPath, setLastPath] = useState(location.pathname);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
 
-  // Close on route change
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [location.pathname]);
+  // Close on route change — adjust state during render instead of in an effect
+  if (lastPath !== location.pathname) {
+    setLastPath(location.pathname);
+    if (menuOpen) setMenuOpen(false);
+  }
 
   // Close on outside tap / click
   useEffect(() => {

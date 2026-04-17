@@ -108,7 +108,7 @@
 
 ---
 
-### PP-008: Prediction Lockout After Kickoff [TODO]
+### PP-008: Prediction Lockout After Kickoff [DONE]
 **As a** platform operator
 **I want** predictions to be locked once a match kicks off
 **So that** users cannot change predictions after seeing live results
@@ -138,7 +138,7 @@
 
 ---
 
-### PP-010: Pagination UI for Matches [TODO]
+### PP-010: Pagination UI for Matches [DONE]
 **As a** user
 **I want** page controls on the Matches page
 **So that** I can browse all 48+ matches across multiple pages
@@ -342,7 +342,7 @@
 
 ---
 
-### PP-022: Mobile Hamburger Menu [TODO]
+### PP-022: Mobile Hamburger Menu [DONE]
 **As a** mobile user
 **I want** a hamburger menu for navigation
 **So that** I can access all pages on small screens
@@ -377,7 +377,7 @@
 
 ---
 
-### PP-023: Leaderboard Pagination UI [TODO]
+### PP-023: Leaderboard Pagination UI [DONE]
 **As a** user
 **I want** page controls on the leaderboard
 **So that** I can see all ranked players

@@ -140,10 +140,19 @@ export default function Matches() {
             {matches.map((match) => {
               const pred = predictions[match.id];
               const hasResult = match.homeScore !== null && match.awayScore !== null;
+              const isLocked =
+                !hasResult && new Date(match.date).getTime() <= Date.now();
 
-              const statusLabel = pred?.saved && !hasResult
-                ? `Your prediction: ${pred.homeScore} – ${pred.awayScore}`
-                : undefined;
+              let statusLabel: string | undefined;
+              let statusColor = "text-emerald-400";
+              if (isLocked) {
+                statusLabel = pred?.saved
+                  ? `Match locked — your prediction: ${pred.homeScore} – ${pred.awayScore}`
+                  : "Match locked";
+                statusColor = "text-[var(--color-text-muted)]";
+              } else if (pred?.saved && !hasResult) {
+                statusLabel = `Your prediction: ${pred.homeScore} – ${pred.awayScore}`;
+              }
 
               return (
                 <MatchCard
@@ -156,17 +165,19 @@ export default function Matches() {
                   homeScore={match.homeScore}
                   awayScore={match.awayScore}
                   statusLabel={statusLabel}
-                  statusColor="text-emerald-400"
+                  statusColor={statusColor}
                 >
-                  <ScoreInput
-                    homeScore={pred?.homeScore || ""}
-                    awayScore={pred?.awayScore || ""}
-                    onChange={(field, value) => handleChange(match.id, field, value)}
-                    onSubmit={() => handleSubmit(match.id)}
-                    submitLabel={pred?.saved ? "Update" : "Submit"}
-                    submitting={submitting === match.id}
-                    variant={pred?.saved ? "saved" : "default"}
-                  />
+                  {!isLocked && (
+                    <ScoreInput
+                      homeScore={pred?.homeScore || ""}
+                      awayScore={pred?.awayScore || ""}
+                      onChange={(field, value) => handleChange(match.id, field, value)}
+                      onSubmit={() => handleSubmit(match.id)}
+                      submitLabel={pred?.saved ? "Update" : "Submit"}
+                      submitting={submitting === match.id}
+                      variant={pred?.saved ? "saved" : "default"}
+                    />
+                  )}
                 </MatchCard>
               );
             })}

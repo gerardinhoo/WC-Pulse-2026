@@ -2,15 +2,17 @@
 
 A full-stack World Cup 2026 prediction app where users predict match scores, earn points, and compete on a leaderboard.
 
+
 ## Tech Stack
 
-**Backend:** Node.js, Express 5, Prisma ORM, SQLite (better-sqlite3 adapter)
-**Frontend:** React, TypeScript, Vite, Tailwind CSS (WIP)
+**Backend:** Node.js, Express 5, Prisma ORM, PostgreSQL (Neon, via `@prisma/adapter-neon` + `ws`)
+**Frontend:** React, TypeScript, Vite, Tailwind CSS, React Router
+**Infra:** AWS Lambda + API Gateway (backend), AWS Amplify (frontend), Terraform, GitHub Actions CI/CD
 
 ## Project Structure
 
 ```
-wc-pulse-2026/
+PitchPulse26/
 ├── server/
 │   ├── src/
 │   │   ├── index.js          # Express app entry point
@@ -24,23 +26,42 @@ wc-pulse-2026/
 │   │   ├── leaderboard.js    # Ranked leaderboard
 │   │   ├── matches.js        # Match listings with group filter
 │   │   ├── teams.js          # Team listings
+│   │   ├── groups.js         # Groups + computed standings
 │   │   └── admin.js          # Admin-only match result updates
 │   ├── middleware/
 │   │   └── auth.js           # JWT verification middleware
 │   ├── lib/
-│   │   └── prisma.js         # Prisma client singleton
+│   │   └── prisma.js         # Prisma client + Neon WebSocket config
 │   └── prisma/
-│       ├── schema.prisma     # Database schema
+│       ├── schema.prisma     # PostgreSQL schema
 │       └── seed.js           # Seed data (48 teams, 16 stadiums, 24 matches)
-└── client/                   # React frontend (WIP)
+├── client/
+│   └── src/
+│       ├── pages/            # Home, Login, Register, Matches, Leaderboard, Groups, Admin
+│       ├── components/       # Navbar, Footer, MatchCard, Pagination, ScoreInput, …
+│       ├── context/          # AuthContext
+│       └── hooks/            # useAuth
+└── infra/                    # Terraform (Lambda, API Gateway, SSM, Amplify, CloudWatch)
 ```
+
+## Features
+
+- Email + password auth with JWT (1-day expiry), role-based access (`user` / `admin`)
+- Score predictions with one-per-user-per-match upsert, pre-filled on return
+- **Prediction lockout after kickoff** (API + UI) so users can't change picks mid-match
+- 12 group standings computed dynamically from results (MP / W / D / L / GF / GA / GD / Pts)
+- Leaderboard with medal icons for top 3 and current-user highlight
+- Paginated Matches and Leaderboard with `?page=N` URL state for shareable links
+- Admin panel to set final match scores, which updates predictions and standings
+- Responsive dark theme with hamburger nav on mobile and iOS-Safari-friendly forms (16px inputs, proper `autoComplete`/`autoCapitalize`)
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js >= 22 (see `server/.nvmrc`)
+- Node.js >= 22 (see `server/.nvmrc`); Vite needs 20.19+ / 22.12+ to build.
 - npm
+- A free Neon PostgreSQL database (https://neon.tech) for local dev.
 
 ### Server Setup
 
@@ -50,18 +71,19 @@ nvm use
 npm install
 ```
 
-Create a `.env` file:
+Create `server/.env`:
 
 ```env
 PORT=5050
 JWT_SECRET=your-secret-key-here
 CORS_ORIGIN=http://localhost:5173
+DATABASE_URL=postgresql://USER:PASS@<neon-host>/neondb?sslmode=require
 ```
 
-Run migrations and seed:
+Apply migrations and seed:
 
 ```bash
-npx prisma migrate dev --schema prisma/schema.prisma
+npx prisma migrate deploy
 npx tsx prisma/seed.js
 ```
 
@@ -72,6 +94,16 @@ npm run dev
 ```
 
 The API will be available at `http://localhost:5050/api`.
+
+### Client Setup
+
+```bash
+cd client
+npm install
+npm run dev
+```
+
+The web app runs at `http://localhost:5173`. It reads `VITE_API_URL` (defaults to `http://localhost:5050/api`).
 
 ## API Endpoints
 

@@ -19,6 +19,10 @@ router.post("/", authMiddleware, validate(predictionSchema), async (req, res, ne
     if (match.homeScore !== null && match.awayScore !== null) {
       return res.status(400).json({ error: "Cannot predict on a match that already has a result" });
     }
+    // PP-008: predictions are locked once the match has kicked off
+    if (new Date(match.date).getTime() <= Date.now()) {
+      return res.status(400).json({ error: "Predictions are locked after kickoff" });
+    }
 
     const prediction = await prisma.prediction.upsert({
       where: {

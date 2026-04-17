@@ -84,6 +84,8 @@ input[type="text"] {
   color: var(--color-text);
   border-radius: 0.5rem;
   padding: 0.5rem 0.75rem;
+  font-size: 16px;
+  line-height: 1.25;
   outline: none;
   transition: border-color 0.2s;
 }

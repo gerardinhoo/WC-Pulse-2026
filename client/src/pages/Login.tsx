@@ -28,7 +28,7 @@ export default function Login() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-[60vh] animate-fade-in">
+    <div className="flex items-center justify-center min-h-[50vh] py-10 animate-fade-in">
       <form
         onSubmit={handleSubmit}
         className="card w-full max-w-sm p-8"
@@ -42,7 +42,13 @@ export default function Login() {
 
         <input
           type="email"
+          name="email"
           placeholder="Email"
+          autoComplete="email"
+          autoCapitalize="off"
+          autoCorrect="off"
+          spellCheck={false}
+          inputMode="email"
           className="w-full mb-3"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -50,7 +56,12 @@ export default function Login() {
 
         <input
           type="password"
+          name="password"
           placeholder="Password"
+          autoComplete="current-password"
+          autoCapitalize="off"
+          autoCorrect="off"
+          spellCheck={false}
           className="w-full mb-4"
           value={password}
           onChange={(e) => setPassword(e.target.value)}

@@ -18,12 +18,14 @@ export default function Register() {
     setSubmitting(true);
 
     try {
+      const normalizedEmail = email.trim();
+      const normalizedDisplayName = displayName.trim();
       await register({
-      email: email.trim(),
-      password: password.trim(),
-      displayName: displayName.trim(),
-    });
-      await login({ email, password });
+        email: normalizedEmail,
+        password,
+        displayName: normalizedDisplayName,
+      });
+      await login({ email: normalizedEmail, password });
       navigate("/matches");
     } catch (err: unknown) {
       console.log("REGISTER ERROR:", err);
@@ -42,10 +44,10 @@ export default function Register() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-[60vh] animate-fade-in relative z-50">
+    <div className="flex items-center justify-center min-h-[50vh] py-10 animate-fade-in">
       <form
         onSubmit={handleSubmit}
-        className="card w-full max-w-sm p-8 relative z-50"
+        className="card w-full max-w-sm p-8"
       >
         <h2 className="text-2xl font-bold mb-1">Create account</h2>
         <p className="text-sm text-[var(--color-text-muted)] mb-6">Join the prediction game</p>
@@ -56,7 +58,12 @@ export default function Register() {
 
         <input
           type="text"
+          name="displayName"
           placeholder="Display Name"
+          autoComplete="nickname"
+          autoCapitalize="words"
+          autoCorrect="off"
+          spellCheck={false}
           className="w-full mb-3"
           value={displayName}
           onChange={(e) => setDisplayName(e.target.value)}
@@ -64,24 +71,30 @@ export default function Register() {
 
         <input
           type="email"
+          name="email"
           placeholder="Email"
+          autoComplete="email"
+          autoCapitalize="off"
+          autoCorrect="off"
+          spellCheck={false}
+          inputMode="email"
           className="w-full mb-3"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
 
-       <input
-        type="password"
-        name="password"
-        autoComplete="new-password"
-        autoCorrect="off"
-        autoCapitalize="off"
-        spellCheck={false}
-        inputMode="text"
-        className="w-full mb-4 relative z-50 bg-white text-black"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          autoComplete="new-password"
+          autoCorrect="off"
+          autoCapitalize="off"
+          spellCheck={false}
+          className="w-full mb-4"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
         <button
           type="submit"

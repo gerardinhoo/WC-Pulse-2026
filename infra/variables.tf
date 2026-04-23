@@ -28,10 +28,16 @@ variable "lambda_zip_path" {
   default     = "../dist/lambda.zip"
 }
 
-variable "cors_origin" {
-  description = "Allowed CORS origin (Amplify URL once deployed)"
+variable "cors_origins" {
+  description = "Allowed frontend origins for API CORS"
+  type        = list(string)
+  default     = ["http://localhost:5173"]
+}
+
+variable "app_url" {
+  description = "Canonical frontend URL used for links in emails"
   type        = string
-  default     = "*"
+  default     = "http://localhost:5173"
 }
 
 variable "github_repo_url" {

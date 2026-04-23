@@ -27,6 +27,7 @@ data "aws_iam_policy_document" "lambda_ssm" {
       aws_ssm_parameter.jwt_secret.arn,
       aws_ssm_parameter.database_url.arn,
       aws_ssm_parameter.cors_origin.arn,
+      aws_ssm_parameter.app_url.arn,
       aws_ssm_parameter.email_from.arn,
     ]
   }
@@ -76,6 +77,7 @@ resource "aws_lambda_function" "api" {
       JWT_SECRET   = aws_ssm_parameter.jwt_secret.value
       DATABASE_URL = aws_ssm_parameter.database_url.value
       CORS_ORIGIN  = aws_ssm_parameter.cors_origin.value
+      APP_URL      = aws_ssm_parameter.app_url.value
       EMAIL_FROM   = aws_ssm_parameter.email_from.value
     }
   }

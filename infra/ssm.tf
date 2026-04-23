@@ -22,5 +22,11 @@ resource "aws_ssm_parameter" "database_url" {
 resource "aws_ssm_parameter" "cors_origin" {
   name  = "/${var.project_name}/CORS_ORIGIN"
   type  = "String"
-  value = var.cors_origin
+  value = join(",", var.cors_origins)
+}
+
+resource "aws_ssm_parameter" "app_url" {
+  name  = "/${var.project_name}/APP_URL"
+  type  = "String"
+  value = var.app_url
 }

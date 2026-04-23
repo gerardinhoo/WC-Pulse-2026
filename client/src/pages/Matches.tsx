@@ -16,7 +16,13 @@ type Match = {
   awayScore: number | null;
 };
 
-type PredictionInput = { homeScore: string; awayScore: string; saved?: boolean };
+type PredictionInput = {
+  homeScore: string;
+  awayScore: string;
+  saved?: boolean;
+  status?: "idle" | "dirty" | "success" | "error";
+  message?: string;
+};
 
 const PAGE_SIZE = 20;
 
@@ -57,6 +63,7 @@ export default function Matches() {
               homeScore: String(p.homeScore),
               awayScore: String(p.awayScore),
               saved: true,
+              status: "idle",
             };
           }
           setPredictions(saved);
@@ -94,7 +101,13 @@ export default function Matches() {
   const handleChange = (matchId: number, field: "homeScore" | "awayScore", value: string) => {
     setPredictions((prev) => ({
       ...prev,
-      [matchId]: { ...prev[matchId], [field]: value, saved: false },
+      [matchId]: {
+        ...prev[matchId],
+        [field]: value,
+        saved: false,
+        status: "dirty",
+        message: undefined,
+      },
     }));
   };
 
@@ -107,6 +120,7 @@ export default function Matches() {
 
     setSubmitting(matchId);
     try {
+      const wasSaved = Boolean(pred.saved);
       await api.post("/predictions", {
         matchId,
         homeScore: Number(pred.homeScore),
@@ -114,11 +128,23 @@ export default function Matches() {
       });
       setPredictions((prev) => ({
         ...prev,
-        [matchId]: { ...prev[matchId], saved: true },
+        [matchId]: {
+          ...prev[matchId],
+          saved: true,
+          status: "success",
+          message: wasSaved ? "Prediction updated" : "Prediction saved",
+        },
       }));
     } catch (err: unknown) {
       const axiosErr = err as { response?: { data?: { error?: string } } };
-      alert(axiosErr.response?.data?.error || "Failed to submit");
+      setPredictions((prev) => ({
+        ...prev,
+        [matchId]: {
+          ...prev[matchId],
+          status: "error",
+          message: `${axiosErr.response?.data?.error || "Failed to save prediction"}. Try again.`,
+        },
+      }));
     } finally {
       setSubmitting(null);
     }
@@ -156,8 +182,20 @@ export default function Matches() {
               } else if (!isVerified) {
                 statusLabel = "Verify your email to submit predictions";
                 statusColor = "text-yellow-300";
+              } else if (pred?.status === "error") {
+                statusLabel = pred.message;
+                statusColor = "text-red-400";
+              } else if (
+                pred?.status === "dirty" &&
+                pred.homeScore !== "" &&
+                pred.awayScore !== ""
+              ) {
+                statusLabel = `Unsaved changes — ${pred.homeScore} – ${pred.awayScore}`;
+                statusColor = "text-yellow-300";
+              } else if (pred?.status === "success" && !hasResult) {
+                statusLabel = `${pred.message} — ${pred.homeScore} – ${pred.awayScore}`;
               } else if (pred?.saved && !hasResult) {
-                statusLabel = `Your prediction: ${pred.homeScore} – ${pred.awayScore}`;
+                statusLabel = `Saved prediction: ${pred.homeScore} – ${pred.awayScore}`;
               }
 
               return (

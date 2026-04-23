@@ -46,7 +46,7 @@ export default function MatchCard({
           })}
         </p>
         {statusLabel && (
-          <p className={`text-xs mt-1 ${statusColor}`}>{statusLabel}</p>
+          <p aria-live="polite" className={`text-xs mt-1 ${statusColor}`}>{statusLabel}</p>
         )}
       </div>
 

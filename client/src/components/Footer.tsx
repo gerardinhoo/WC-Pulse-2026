@@ -9,7 +9,7 @@ const NAV_LINKS = [
 export default function Footer() {
   return (
     <footer className="border-t border-[var(--color-border)] bg-[var(--color-card)] mt-auto">
-      <div className="max-w-5xl mx-auto px-4 py-8">
+      <div className="max-w-5xl mx-auto px-4 py-10">
         <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-6 text-sm">
           {/* Left — Branding */}
           <div className="text-center md:text-left">
@@ -17,7 +17,7 @@ export default function Footer() {
               <span className="text-[var(--color-accent)]">Pitch</span>Pulse 26
             </p>
             <p className="text-[var(--color-text-muted)] mt-1">
-              Predict. Compete. Glory.
+              Predict. Compete. Win.
             </p>
           </div>
 
@@ -34,8 +34,8 @@ export default function Footer() {
             ))}
           </nav>
 
-          {/* Right — Credits */}
           <div className="text-center md:text-right space-y-2">
+            {/* Right — Credits */}
               {/* Instagram */}
               <a
                 href="https://instagram.com/pitchpulse26"
@@ -65,7 +65,7 @@ export default function Footer() {
                 Built by Gerard Eklu
               </p>
             </div>
-        </div>
+          </div>
 
         {/* Copyright */}
         <p className="text-center text-xs text-[var(--color-text-muted)] mt-6">

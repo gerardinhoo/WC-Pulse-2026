@@ -33,7 +33,7 @@ const corsOptions = {
 
     return callback(new Error(`Origin ${origin} is not allowed by CORS`));
   },
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
  
@@ -65,7 +65,7 @@ app.get("/api/health", (req, res) => {
 // ── Global error handler ──
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
-  console.error("🔥 ERROR:", err?.stack || err);
+  console.error("ERROR:", err?.stack || err);
 
   const status = err.status || 500;
   const message =

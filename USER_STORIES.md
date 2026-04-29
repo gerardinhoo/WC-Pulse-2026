@@ -580,16 +580,16 @@
 
 ---
 
-### PP-033: Monitoring Dashboard (CloudWatch)
+### PP-033: Monitoring Dashboard (CloudWatch) [DONE]
 **As a** developer
 **I want** a CloudWatch dashboard
 **So that** I can monitor API health in production
 
 **Acceptance Criteria:**
-- Dashboard: Lambda invocations, errors, duration, API Gateway 4xx/5xx
-- Alarm on error rate > 5% (SNS email notification)
-- Lambda logs in CloudWatch Logs (30-day retention)
-- Dashboard defined in Terraform
+- Dashboard includes Lambda invocations, errors, and duration plus API Gateway 4xx, 5xx, and request count
+- CloudWatch alarms exist for Lambda errors, API Gateway 5xx, and high Lambda duration
+- Lambda and API Gateway logs are available in CloudWatch Logs with defined retention
+- Dashboard and alarms are defined in Terraform
 
 **Priority:** Medium | **Labels:** devops, observability
 

@@ -161,6 +161,67 @@ Current rollback approach:
 - backend rollback by redeploying the last known good Lambda artifact from S3
 - database rollback avoided by favoring backward-compatible Prisma migrations
 
+## Production Monitoring & Debugging
+
+Production monitoring is handled through AWS CloudWatch using Terraform-managed resources in [infra/monitoring.tf](/Users/gerardeklu/PitchPulse26/infra/monitoring.tf).
+
+### CloudWatch Dashboard
+
+Dashboard name:
+
+- `pitchpulse26-prod-overview`
+
+Widgets included:
+
+- Lambda `Invocations`
+- Lambda `Errors`
+- Lambda `Duration`
+- API Gateway `4xx`
+- API Gateway `5xx`
+- API Gateway `Count`
+
+### CloudWatch Alarms
+
+Current alarms:
+
+- `pitchpulse26-lambda-errors`
+- `pitchpulse26-api-5xx`
+- `pitchpulse26-lambda-duration-high`
+
+### Log Groups
+
+Current log groups:
+
+- `/aws/lambda/pitchpulse26-api`
+- `/aws/apigateway/pitchpulse26`
+
+Retention:
+
+- `14 days` for both Lambda and API Gateway logs
+
+### How To Debug Production Issues
+
+1. Open CloudWatch Dashboards and check `pitchpulse26-prod-overview`.
+2. Check whether Lambda `Errors` or API Gateway `5xx` spiked.
+3. Review Lambda `Duration` to see whether requests slowed down before failing.
+4. Open CloudWatch Logs for `/aws/lambda/pitchpulse26-api` to inspect backend exceptions.
+5. Open CloudWatch Logs for `/aws/apigateway/pitchpulse26` to review request path, method, status, and response size.
+6. Run the health check:
+
+```bash
+curl -i https://fqblsiujfj.execute-api.us-east-1.amazonaws.com/api/health
+```
+
+7. If a deployment caused the issue, follow the rollback steps in [docs/runbooks/deployment-rollback.md](/Users/gerardeklu/PitchPulse26/docs/runbooks/deployment-rollback.md).
+
+### Apply Monitoring Changes
+
+```bash
+cd infra
+terraform plan
+terraform apply
+```
+
 ## API Endpoints
 
 ### Public

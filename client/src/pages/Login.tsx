@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const resetSuccess = Boolean((location.state as { resetSuccess?: boolean } | null)?.resetSuccess);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -48,6 +50,15 @@ export default function Login() {
       <form onSubmit={handleSubmit} className="card w-full max-w-sm p-8" noValidate>
         <h2 className="text-2xl font-bold mb-1">Welcome back</h2>
         <p className="text-sm text-[var(--color-text-muted)] mb-6">Sign in to your account</p>
+
+        {resetSuccess && (
+          <p
+            role="status"
+            className="text-emerald-300 text-sm mb-3 bg-emerald-400/10 rounded-md px-3 py-2"
+          >
+            Your password was reset successfully. Sign in with your new password.
+          </p>
+        )}
 
         {error && (
           <p

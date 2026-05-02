@@ -120,6 +120,8 @@ describe("Auth pages", () => {
     expect(api.post).toHaveBeenCalledWith("/auth/forgot-password", {
       email: "user@example.com",
     });
+    expect(screen.queryByLabelText("Email address")).not.toBeInTheDocument();
+    expect(screen.getByText("Check user@example.com for the reset email.")).toBeInTheDocument();
   });
 
   it("submits a reset-password request from the reset page", async () => {
@@ -145,5 +147,9 @@ describe("Auth pages", () => {
       token: "reset-token-12345",
       password: "newpassword123",
     });
+    expect(screen.queryByLabelText("New password")).not.toBeInTheDocument();
+    expect(
+      screen.getByText("Your password has been updated. Redirecting you to sign in..."),
+    ).toBeInTheDocument();
   });
 });
